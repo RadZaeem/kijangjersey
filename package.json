@@ -33,6 +33,7 @@
     "base64-image-utils": "latest",
     "express": "latest",
     "react": "latest",
+    "react-data-grid": "^1.0.36",
     "react-dom": "latest",
     "react-dropzone": "latest",
     "react-hot-loader": "latest",
@@ -49,7 +50,10 @@
     "base64-image-utils": "latest",
     "lodash": "latest",
     "react": "latest",
+    "react-bootstrap-table": "^2.4.1",
+    "react-data-grid": "^1.0.36",
     "react-dropzone": "latest",
+    "react-editable-table": "^0.3.7",
     "tinycolor2": "latest"
   }
 }

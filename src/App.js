@@ -1,5 +1,12 @@
-var React = require('react')
-var ReactDOM = require('react-dom')
+
+
+import React from 'react'; 
+import ReactDOM from 'react-dom'; 
+import ReactDataGrid from 'react-data-grid';
+
+//var React = require('react')
+//var ReactDOM = require('react-dom')
+
 
 
 var _ = require('lodash')
