@@ -375,7 +375,7 @@ var BuyerDetails= React.createClass({
 
         <br/>
 
-        <p><input type="submit" value="Submit Order"/></p>
+        <p><input type="button" value="Submit Order"/></p>
 
         </form>
         </div>
