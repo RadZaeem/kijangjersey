@@ -96,26 +96,38 @@ var Graphic = React.createClass({
     shirtFront.src = this.props.shirtFrontSrc;
     var shirtBack=  new Image();
     shirtBack.src = this.props.shirtBackSrc;
+    var logo=  new Image();
+    logo.src = this.props.logoSrc;
 
     
     var shirtFrontPos=[((1/20)*this.state.width),((1/10)*this.state.height)];
     var shirtBackPos=[((10/20)*this.state.width),((1/10)*this.state.height)];
     context.drawImage(shirtFront,shirtFrontPos[0],shirtFrontPos[1]);
     context.drawImage(shirtBack,shirtBackPos[0],shirtBackPos[1]);
-    
 
+    var logoOffset=[(0.6)*shirtBack.width, (0.3)*shirtBack.height];
+    //var logoOffset=[0,0];
+    //var logoScale=[(10)*logo.width/shirtBack.width, (10)*logo.width/shirtBack.width];
+    var logoScale=[(0.1)*shirtBack.width, (0.1)*shirtBack.width];
+    var logoPos=[shirtFrontPos[0]+logoOffset[0],shirtFrontPos[1]+logoOffset[1]];
+    context.drawImage(logo, logoPos[0], logoPos[1], logoScale[0],logoScale[1]);
     
     context.textAlign="center";
 
-    var numberOffset=[shirtFront.width/2, shirtFront.height/2];
+    var numberOffset=[shirtBack.width/2, shirtBack.height/2];
     var numberPos=[shirtBackPos[0]+numberOffset[0],shirtBackPos[1]+numberOffset[1]];
     context.font = "90px sans";
     context.fillText(this.props.numberPreview, numberPos[0], numberPos[1]);
     
-    var nameOffset=[shirtFront.width/2, (3/4)*shirtFront.height];
+    var nameOffset=[shirtBack.width/2, (3/4)*shirtBack.height];
     var namePos=[shirtBackPos[0]+nameOffset[0],shirtBackPos[1]+nameOffset[1]];
     context.font = "32px sans";
     context.fillText(this.props.namePreview, namePos[0], namePos[1]);
+
+
+
+
+
     /*
 
     context.translate(100, 100);
@@ -123,6 +135,8 @@ var Graphic = React.createClass({
     context.fillStyle = '#F00';
     context.fillRect(-50, -50, 100, 100);
     */
+
+
     context.restore();
   },
 
@@ -142,8 +156,6 @@ Input for Preview shirt with user given number and name
 
 var PreviewInput = React.createClass({ 
   handleChange: function() {
-    console.log("value is " + this.refs.num.value);
-
     this.props.onUserInput(
       this.refs.num.value,
       this.refs.name.value
@@ -190,7 +202,7 @@ class PlayerTable extends React.Component {
     });
     return (
       <div>
-      Players List
+      <h2>Players List</h2>
       <br/>
       <button type="button" onClick={this.props.onRowAdd} className="btn btn-success pull-right">+ Add Player</button>
         <table className="table table-bordered">
@@ -280,6 +292,99 @@ class EditableCell extends React.Component {
 
 /*------------------------------------------------------
 
+BuyerDetails
+For buyer to fill up his/her details
+
+------------------------------------------------------*/
+
+var BuyerDetails= React.createClass({ 
+  handleChange: function() {
+    //this.props.onUserInput(
+    //  this.refs.num.value,
+    //  this.refs.name.value
+    //);
+  },
+  
+  render: function() {
+    return (<div>
+        <h2>Order Details:</h2>
+        <form>
+
+        <p>
+        <label>Order No. : {this.props.orderNo}</label>
+        </p>
+
+        <p>
+        <label>Name: </label>
+        <input
+          type="text"
+          ref="nameInput"
+          size="50"
+        />
+        </p>
+
+        <p>
+        <label>Shipping Address:</label>
+        <textarea
+          ref="addressInput"
+          cols="40"
+          rows="5"
+        />
+        </p>
+
+        <p>
+        <label>City:</label>
+        <input
+          type="text"
+          ref="cityInput"
+          />
+        </p>
+        <p>
+        <label>State/Province:</label>
+        <input
+          type="text"
+          ref="stateInput"
+          />
+        </p>
+
+        <p>
+        <label>Zipcode:</label>
+        <input
+          type="text"
+          ref="zipCodeInput"
+          size='8'
+        />
+        </p>
+
+        <p>
+        <label>Phone Number:</label>
+        <input
+          type="text"
+          ref="phoneInput"
+          size='12'
+        />
+        </p>
+
+        <p>
+        <label>E-mail Address:</label>
+        <input
+          type="text"
+          ref="emailInput"  
+        />
+        </p>
+
+        <br/>
+
+        <p><input type="submit" value="Submit Order"/></p>
+
+        </form>
+        </div>
+    );
+  }
+});
+
+/*------------------------------------------------------
+
 App
 main app
 
@@ -287,29 +392,54 @@ main app
 
 export var App = React.createClass({
   getInitialState () {
+    var timestamp;//getUTCMilliseconds();
+    var now = new Date();
+    timestamp = now.getFullYear().toString(); // 2011
+    timestamp += (now.getMonth() < 10 ? '0' : '') + now.getMonth().toString(); // JS months are 0-based, so +1 and pad with 0's
+    timestamp += (now.getDate() < 10 ? '0' : '') + now.getDate().toString();
+    timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
+    timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
+    timestamp += (now.getSeconds() < 10 ? '0' : '') + now.getSeconds().toString();
     return {
       shirt: null,
-      images: [{
-        loadingImage: false
-      }, {
-        loadingImage: false
-      }],
+      images: 
+      [ 
+        {loadingImage: false}, 
+        {loadingImage: false},
+        {loadingImage: false}
+      ],
+
       activeImageIndex: 0,
       scale: 1,
       numberPreview:"1",
       namePreview:"Ahmad",
-      players:[{
-        id: 1,
-        name: 'Fulan',
-        number: '1',
-        size: 'L'
-      }]
+      players: 
+      [ 
+        {
+          id: 1,
+          name: 'Fulan',
+          number: '1',
+          size: 'L'
+        } 
+      ],
+      buyerDetails:
+      {
+        orderNo: timestamp,
+        name:'',
+        address:'',
+        city:'',
+        stateProvince:'',
+        zipcode:'',
+        phoneNumber:'',
+        email:''
+      }
+
     }
   },
-
-  //componentDidMount() {
-    //this.readDefaultSprite('white')
-  //},
+  componentDidMount() {
+    this.readDefaultSprite('white')
+    //console.log(this.state.buyerDetails.orderNo)
+  },
 
   readDefaultSprite(name) {
     _.forEach(defaultSprites[name].sprites, (sprite, spriteIndex) => {
@@ -320,8 +450,16 @@ export var App = React.createClass({
   },
 
   onDrop (imageIndex, files) {
-    //this.readFile(imageIndex, files[0])
+    this.readFile(imageIndex, files[0])
   },
+
+  onDelLogo (imageIndex, files) {
+    this.state.images[2] = {
+        loadingImage: false
+      }
+      this.forceUpdate()
+  },
+
 
   readFile(imageIndex, file) {
     var fr = new window.FileReader()
@@ -390,12 +528,11 @@ export var App = React.createClass({
     var player = {
       id: id,
       name: "",
-      price: "",
-      category: "",
-      qty: 0
+      number: "",
+      size: "",
     };
 
-    console.log("button clicket");
+    console.log("Player added");
     this.state.players.push(player);
     this.setState(this.state.players);
 
@@ -433,10 +570,7 @@ export var App = React.createClass({
 
     return (
       <div className='padding-horizontal-2x'>
-      
-        
-
-        Select jersey design
+        <h2>Select jersey design</h2>
 
         {_.map(defaultSprites, (sprite, spriteIndex) => {
             var path="sprites/"+sprite.sprites[0];
@@ -449,15 +583,18 @@ export var App = React.createClass({
           })
         }
         <div className='dropZone-container'>
-          <Dropzone onDrop={this.onDrop.bind(null, 0)} className='dropZone'>
-            {/* images[0].base64 && <img src={images[0].base64} / >*/}
-            {images[0].loadingImage ? 'Processing...' : 'Add logo (optional)'}
+          <Dropzone onDrop={this.onDrop.bind(null, 2)} className='dropZone'>
+            {images[2].base64 && <img src={images[2].base64} />}
+            {images[2].loadingImage ? 'Processing...' : 'Add logo (optional)'}
           </Dropzone>
+          {images[2].base64 &&
+            (<input type="button" onClick={this.onDelLogo} value="Remove logo" className="del-btn"/>)
+          }
         </div>
 
         <br /><br />
 
-        Preview number and name:
+        <h2>Preview number and name:</h2>
         <div>
         <PreviewInput
           numberPreview={this.state.numberPreview}
@@ -476,119 +613,41 @@ export var App = React.createClass({
           (
             <Graphic 
               shirtFrontSrc={images[0].base64} 
-              shirtBackSrc={images[1].base64} 
+              shirtBackSrc={images[1].base64}
+              logoSrc={images[2].base64}
               numberPreview={this.state.numberPreview}
               namePreview={this.state.namePreview}
             />
           )
         }
         </div>
+
         <div>
-        <PlayerTable
-          onPlayerTableUpdate={this.handlePlayerTable} 
-          onRowAdd={this.handleAddEvent} 
-          onRowDel={this.handleRowDel} 
-          players={this.state.players} />
-      </div>
+          <PlayerTable
+            onPlayerTableUpdate={this.handlePlayerTable} 
+            onRowAdd={this.handleAddEvent} 
+            onRowDel={this.handleRowDel} 
+            players={this.state.players} />
+        </div>  
+        <br/>
+  
+        <div>
+        <BuyerDetails 
+          orderNo={this.state.buyerDetails.orderNo}
+          name={this.state.buyerDetails.name}
+          address={this.state.buyerDetails.address}
+          city={this.state.buyerDetails.city}
+          stateProvince={this.state.buyerDetails.stateProvince}
+          zipcode={this.state.buyerDetails.zipCode}
+          phoneNumber={this.state.buyerDetails.phoneNumber}
+          email={this.state.buyerDetails.email}
+        />
+        </div>
+        
 {/*
-        <label>Order Details:</label>
-        <form>
 
-        <p>
-        <label>Order No. : </label>{new Date().getUTCMilliseconds()}
-        </p>
-
-        <p>
-        <label>Name: </label>
-        <input
-          type="text"
-          placeholder=""
-
-          ref="nameInput"
-          size="50"
-        />
-        </p>
-
-        <p>
-        <label>Shipping Address:</label>
-        <textarea
-          placeholder=""
-
-          ref="addressInput"
-          cols="40"
-          rows="5"
-        />
-        </p>
-
-        <p>
-        <label>City:</label>
-        <input
-          type="text"
-          placeholder=""
-
-          ref="cityInput"
-          />
-        </p>
-
-
- 
-        <p>
-        <label>State/Province:</label>
-        <input
-          type="text"
-          placeholder=""
-
-          ref="stateInput"
-          />
-        </p>
-
-        <p>
-        <label>Zipcode:</label>
-        <input
-          type="text"
-          placeholder=""
-
-          ref="zipCodeInput"
-          size='8'
-        />
-        </p>
-
-        <p>
-        <label>Phone Number:</label>
-        <input
-          type="text"
-          placeholder=""
-
-          ref="phoneInput"
-          size='12'
-        />
-        </p>
-
-        <p>
-        <label>E-mail Address:</label>
-        <input
-          type="text"
-          placeholder=""
-          ref="emailInput"
-          
-        />
-        </p>
 
         
-        
-
-        
-        <p>
-          <input
-            type="checkbox"
-            checked={this.props.inStockOnly}
-            ref="inStockOnlyInput"
-            onChange={this.handleChange}
-          />
-          {' '}
-          Only show players in stock
-        </p>
-      
       </form>
 
 
