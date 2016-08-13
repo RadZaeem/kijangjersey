@@ -1,14 +1,11 @@
-
-
 import React from 'react'; 
 import ReactDOM from 'react-dom'; 
-import ReactDataGrid from 'react-data-grid';
+//import ReactDataGrid from 'react-data-grid';
 
 //var React = require('react')
 //var ReactDOM = require('react-dom')
 
-
-
+//import './Players';
 var _ = require('lodash')
 var Dropzone = require('react-dropzone')
 
@@ -143,8 +140,6 @@ Input for Preview shirt with user given number and name
 
 ------------------------------------------------------*/
 
-
-
 var PreviewInput = React.createClass({ 
   handleChange: function() {
     console.log("value is " + this.refs.num.value);
@@ -160,7 +155,7 @@ var PreviewInput = React.createClass({
       <form>
         <input
           type="text"
-          placeholder="..."
+          placeholder="Enter number"
           value={this.props.numberPreview}
           ref="num"
           onChange={this.handleChange}       
@@ -168,7 +163,7 @@ var PreviewInput = React.createClass({
         <p>
         <input
           type="text"
-          placeholder="..."
+          placeholder="Enter name"
           value={this.props.namePreview}
           ref="name"
           onChange={this.handleChange}
@@ -177,6 +172,110 @@ var PreviewInput = React.createClass({
     );
   }
 });
+
+
+/*------------------------------------------------------
+
+PlayerTable
+Render player
+------------------------------------------------------*/
+
+class PlayerTable extends React.Component {
+
+  render() {
+    var onPlayerTableUpdate = this.props.onPlayerTableUpdate;
+    var rowDel = this.props.onRowDel;
+    var player = this.props.players.map(function(player) {
+      return (<PlayerRow onPlayerTableUpdate={onPlayerTableUpdate} player={player} onDelEvent={rowDel} key={player.id}/>)
+    });
+    return (
+      <div>
+      Players List
+      <br/>
+      <button type="button" onClick={this.props.onRowAdd} className="btn btn-success pull-right">+ Add Player</button>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>Name</th>
+              <th>Number</th>
+              <th>Size</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {player}
+
+          </tbody>
+
+        </table>
+      </div>
+    );
+
+  }
+
+}
+
+
+/*------------------------------------------------------
+
+PlayerRow
+Render row
+------------------------------------------------------*/
+
+class PlayerRow extends React.Component {
+  onDelEvent() {
+    this.props.onDelEvent(this.props.player);
+
+  }
+  render() {
+
+    return (
+      <tr className="eachRow">
+        <td>{this.props.player.id}</td>
+        {/*
+        <EditableCell onPlayerTableUpdate={this.props.onPlayerTableUpdate} cellData={{
+          "type": "id",
+          value: this.props.player.id,
+          id: this.props.player.id
+        }}/>
+      */}
+        <EditableCell onPlayerTableUpdate={this.props.onPlayerTableUpdate} cellData={{
+          type: "name",
+          value: this.props.player.name,
+          id: this.props.player.id
+        }}/>
+        <EditableCell onPlayerTableUpdate={this.props.onPlayerTableUpdate} cellData={{
+          type: "number",
+          value: this.props.player.number,
+          id: this.props.player.id
+        }}/>
+        <EditableCell onPlayerTableUpdate={this.props.onPlayerTableUpdate} cellData={{
+          type: "size",
+          value: this.props.player.size,
+          id: this.props.player.id
+        }}/>
+        <td className="del-cell">
+          <input type="button" onClick={this.onDelEvent.bind(this)} value="X" className="del-btn"/>
+        </td>
+      </tr>
+    );
+
+  }
+
+}
+class EditableCell extends React.Component {
+
+  render() {
+    return (
+      <td>
+        <input type='text' name={this.props.cellData.type} id={this.props.cellData.id} value={this.props.cellData.value} onChange={this.props.onPlayerTableUpdate}/>
+      </td>
+    );
+
+  }
+
+}
 
 
 /*------------------------------------------------------
@@ -199,6 +298,12 @@ export var App = React.createClass({
       scale: 1,
       numberPreview:"1",
       namePreview:"Ahmad",
+      players:[{
+        id: 1,
+        name: 'Fulan',
+        number: '1',
+        size: 'L'
+      }]
     }
   },
 
@@ -274,6 +379,52 @@ export var App = React.createClass({
     });
   },
 
+  handleRowDel(player) {
+    var index = this.state.players.indexOf(player);
+    this.state.players.splice(index, 1);
+    this.setState(this.state.players);
+  },
+
+  handleAddEvent(evt) {
+    var id = this.state.players.length+1;
+    var player = {
+      id: id,
+      name: "",
+      price: "",
+      category: "",
+      qty: 0
+    };
+
+    console.log("button clicket");
+    this.state.players.push(player);
+    this.setState(this.state.players);
+
+  },
+
+  handlePlayerTable(evt) {
+    var item = {
+      id: evt.target.id,
+      name: evt.target.name,
+      value: evt.target.value
+    };
+    var players = this.state.players;
+
+    var newPlayers = players.map(function(player) {
+      for (var key in player) {
+        if (key == item.name && player.id == item.id) {
+          //  console.log("inside mao");
+          //   console.log(player);
+          player.id = item.id;
+          player[key] = item.value;
+
+        }
+      }
+      return player;
+    });
+    this.setState(newPlayers);
+    console.log(this.state.players);
+  },
+
   render: function(){
     var {images, activeImageIndex, scale} = this.state
     var ready = images[0].shadow && images[1].shadow
@@ -282,6 +433,7 @@ export var App = React.createClass({
 
     return (
       <div className='padding-horizontal-2x'>
+      
         
 
         Select jersey design
@@ -299,7 +451,7 @@ export var App = React.createClass({
         <div className='dropZone-container'>
           <Dropzone onDrop={this.onDrop.bind(null, 0)} className='dropZone'>
             {/* images[0].base64 && <img src={images[0].base64} / >*/}
-            {images[0].loadingImage ? 'Processing...' : 'Add logo'}
+            {images[0].loadingImage ? 'Processing...' : 'Add logo (optional)'}
           </Dropzone>
         </div>
 
@@ -331,6 +483,13 @@ export var App = React.createClass({
           )
         }
         </div>
+        <div>
+        <PlayerTable
+          onPlayerTableUpdate={this.handlePlayerTable} 
+          onRowAdd={this.handleAddEvent} 
+          onRowDel={this.handleRowDel} 
+          players={this.state.players} />
+      </div>
 {/*
         <label>Order Details:</label>
         <form>
@@ -427,7 +586,7 @@ export var App = React.createClass({
             onChange={this.handleChange}
           />
           {' '}
-          Only show products in stock
+          Only show players in stock
         </p>
       
       </form>

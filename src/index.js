@@ -2,10 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import { App } from './App'
 //import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-//ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'))
 
-import Products from './Products';
-ReactDOM.render(<Products />, document.getElementById('root'));
+//import Products from './Products';
+//ReactDOM.render(<Products />, document.getElementById('root'));
 
 /*
 var products = [{

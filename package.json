@@ -54,6 +54,8 @@
     "react-data-grid": "^1.0.36",
     "react-dropzone": "latest",
     "react-editable-table": "^0.3.7",
+    "react-icon-rating": "^0.2.0",
+    "react-rating": "^0.4.0",
     "tinycolor2": "latest"
   }
 }
