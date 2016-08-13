@@ -1,4 +1,6 @@
 var React = require('react')
+var ReactDOM = require('react-dom')
+
 
 var _ = require('lodash')
 var Dropzone = require('react-dropzone')
@@ -73,12 +75,12 @@ var Graphic = React.createClass({
     };
   },
   componentDidMount: function() {
-    var context = this.getDOMNode().getContext('2d');
+    var context = ReactDOM.findDOMNode(this).getContext('2d');
     this.paint(context);
   },
 
   componentDidUpdate: function() {
-    var context = this.getDOMNode().getContext('2d');
+    var context = ReactDOM.findDOMNode(this).getContext('2d');
     context.clearRect(0, 0, this.state.width ,this.state.height);
     
     this.paint(context);
@@ -137,60 +139,37 @@ Input for Preview shirt with user given number and name
 
 
 var PreviewInput = React.createClass({ 
+  handleChange: function() {
+    console.log("value is " + this.refs.num.value);
 
-  handleChange: function(event) {
     this.props.onUserInput(
-      this.refs.numberInput.value,
-      this.refs.nameInput.value,
+      this.refs.num.value,
+      this.refs.name.value
     );
   },
   
   render: function() {
-    return (<div>
-      Number: 
-      <input
-        type="text"
-        value={this.props.numberPreview}
-        onChange={this.handleChange}
-        ref="numberInput"
-      />
-      <br/>
-
-      Name:
-      <input
-        type="text"
-        value={this.props.namePreview}
-        onChange={this.handleChange}
-        ref="nameInput"
-      />
-    </div>
+    return (
+      <form>
+        <input
+          type="text"
+          placeholder="..."
+          value={this.props.numberPreview}
+          ref="num"
+          onChange={this.handleChange}       
+        />
+        <p>
+        <input
+          type="text"
+          placeholder="..."
+          value={this.props.namePreview}
+          ref="name"
+          onChange={this.handleChange}
+        /></p>
+      </form>
     );
   }
 });
-
-/*
-export const DrawApp = React.createClass({
-
-  getInitialState: function() {
-    return {
-      rotation: 0 };
-  },
-
-  componentDidMount: function() {
-    requestAnimationFrame(this.tick);
-  },
-
-  tick: function() {
-    this.setState({ rotation: this.state.rotation + .01 });
-    requestAnimationFrame(this.tick);
-  },
-
-  render: function() {
-    return <div><Graphic rotation={this.state.rotation} /></div>
-  }
-
-});
-*/
 
 
 /*------------------------------------------------------
@@ -200,7 +179,7 @@ main app
 
 ------------------------------------------------------*/
 
-export const App = React.createClass({
+export var App = React.createClass({
   getInitialState () {
     return {
       shirt: null,
@@ -211,14 +190,14 @@ export const App = React.createClass({
       }],
       activeImageIndex: 0,
       scale: 1,
-      numberPreview:1,
+      numberPreview:"1",
       namePreview:"Ahmad",
     }
   },
 
-  componentDidMount() {
-    this.readDefaultSprite('white')
-  },
+  //componentDidMount() {
+    //this.readDefaultSprite('white')
+  //},
 
   readDefaultSprite(name) {
     _.forEach(defaultSprites[name].sprites, (sprite, spriteIndex) => {
@@ -280,14 +259,15 @@ export const App = React.createClass({
     })
   },
 
-  handleUserInput: function(numberPreview,namePreview) {
+  handleUserInput: function(number, name) {
+    console.log("at handle");
     this.setState({
-      numberPreview: numberPreview,
-      namePreview: namePreview,
+      numberPreview: number,
+      namePreview: name,
     });
   },
 
-  render () {
+  render: function(){
     var {images, activeImageIndex, scale} = this.state
     var ready = images[0].shadow && images[1].shadow
 
@@ -297,7 +277,7 @@ export const App = React.createClass({
       <div className='padding-horizontal-2x'>
         
 
-        Select shirt design
+        Select jersey design
 
         {_.map(defaultSprites, (sprite, spriteIndex) => {
             var path="sprites/"+sprite.sprites[0];
@@ -319,11 +299,13 @@ export const App = React.createClass({
         <br /><br />
 
         Preview number and name:
+        <div>
         <PreviewInput
           numberPreview={this.state.numberPreview}
           namePreview={this.state.namePreview}
           onUserInput={this.handleUserInput}
         />
+        </div>
 
         <div>
           {ready ? 'Preview:' : 'Select a design first to preview'}
@@ -331,13 +313,16 @@ export const App = React.createClass({
         <br />
 
         <div>
-        {ready && (
-          <Graphic 
-            shirtFrontSrc={images[0].base64} 
-            shirtBackSrc={images[1].base64} 
-            numberPreview={this.state.numberPreview}
-            namePreview={this.state.namePreview}
-            />)}
+        {ready && 
+          (
+            <Graphic 
+              shirtFrontSrc={images[0].base64} 
+              shirtBackSrc={images[1].base64} 
+              numberPreview={this.state.numberPreview}
+              namePreview={this.state.namePreview}
+            />
+          )
+        }
         </div>
 {/*
         <label>Order Details:</label>
@@ -463,3 +448,34 @@ export const App = React.createClass({
     );
   }
 })
+
+
+export const DrawApp = React.createClass({
+getInitialState () {
+    return {
+      numberPreview:"1",
+      namePreview:"Ahmad",
+    }
+  },
+
+
+  handleUserInput: function(number, name) {
+    console.log("at handle");
+    this.setState({
+      numberPreview: number,
+      namePreview: name,
+    });
+  },
+
+  render: function(){
+    return (
+        <div>
+        <PreviewInput
+          numberPreview={this.state.numberPreview}
+          namePreview={this.state.namePreview}
+          onUserInput={this.handleUserInput}
+        />
+        </div>
+    );
+  }
+});
