@@ -1,5 +1,6 @@
 import React from 'react'; 
 import ReactDOM from 'react-dom'; 
+//import './email.min.js';
 //import ReactDataGrid from 'react-data-grid';
 
 //var React = require('react')
@@ -23,14 +24,17 @@ Sprites related variables and functions
 var defaultSprites = {
   white: {
     name: 'White',
+    price:30,
     sprites: ['white_front.png', 'white_back.png']
   },
   blue: {
     name: 'Blue',
+    price:40,
     sprites: ['blue_front.png', 'blue_back.png']
   },
   green: {
     name: 'Green',
+    price:37,
     sprites: ['green_front.png', 'green_back.png']
   },
   /*
@@ -90,6 +94,8 @@ var Graphic = React.createClass({
     this.paint(context);
   },
 
+
+
   paint: function(context) {
     context.save();
     var shirtFront=  new Image();
@@ -142,7 +148,10 @@ var Graphic = React.createClass({
   },
 
   render: function() {
-    return <canvas width={this.state.width} height={this.state.height} />;
+    return <canvas 
+      id="mycanvas"
+      width={this.state.width} 
+      height={this.state.height} />;
   }
 
 });
@@ -438,7 +447,7 @@ export var App = React.createClass({
     timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
     timestamp += (now.getSeconds() < 10 ? '0' : '') + now.getSeconds().toString();
     return {
-      shirt: null,
+      jerseyChosen:{},
       images: 
       [ 
         {loadingImage: false}, 
@@ -454,7 +463,7 @@ export var App = React.createClass({
       [ 
         {
           id: 1,
-          name: 'Fulan',
+          name: 'Ahmad',
           number: '1',
           size: 'L'
         } 
@@ -469,25 +478,38 @@ export var App = React.createClass({
         zipcode:'',
         phoneNumber:'',
         email:''
-      }
+      },
+      totalPrice:0,
+      designCanvas:null
 
     }
   },
+
+  saveCanvas() {
+    var canvas = document.getElementById("mycanvas");
+    var img    = canvas.toDataURL("image/png");
+    this.setState({designCanvas:img});
+    //document.write('<img src="'+img+'"/>');
+  },
   componentDidMount() {
     this.readDefaultSprite('white')
+this.updatePrice();
     //console.log(this.state.buyerDetails.orderNo)
   },
 
   readDefaultSprite(name) {
+    var j = {jerseyChosen:defaultSprites[name]};
+    this.setState(j);
     _.forEach(defaultSprites[name].sprites, (sprite, spriteIndex) => {
       readImageAsBase64('sprites/' + sprite, (base64) => {
-        this.loadBase64Sprite(spriteIndex, base64)
+        this.loadBase64Sprite(spriteIndex, base64);
       })
     })
+    
+    
   },
 
   onDrop (imageIndex, files) {
-
     this.readFile(imageIndex, files[0])
   },
 
@@ -499,6 +521,7 @@ export var App = React.createClass({
   },
 
   onSubmitOrder() {
+    //TODO
     console.log(this.state.buyerDetails);
   },
 
@@ -513,7 +536,7 @@ export var App = React.createClass({
       const base64 = data.currentTarget.result
 
       if (base64.length > 10000) {
-        let confirmation = confirm('Your image is really big! Do you really want to TRY to animate it?')
+        let confirmation = confirm('Logo is very large. Confirm?')
 
         if(!confirmation) {
           this.state.images[imageIndex].loadingImage = false
@@ -547,8 +570,16 @@ export var App = React.createClass({
         width: imageWidth,
         loadingImage: false
       }
+      this.updatePrice();
       this.forceUpdate()
     })
+  },
+
+  updatePrice: function () {
+    //console.log(this.state.jerseyChosen.price);
+    var newPrice = this.state.players.length* this.state.jerseyChosen.price;
+    this.setState({totalPrice:newPrice});
+    this.forceUpdate()
   },
 
   handleUserInput: function(number, name) {
@@ -561,6 +592,7 @@ export var App = React.createClass({
   handleRowDel(player) {
     var index = this.state.players.indexOf(player);
     this.state.players.splice(index, 1);
+    this.updatePrice();
     this.setState(this.state.players);
   },
 
@@ -575,6 +607,7 @@ export var App = React.createClass({
 
     console.log("Player added");
     this.state.players.push(player);
+    this.updatePrice();
     this.setState(this.state.players);
 
   },
@@ -599,8 +632,9 @@ export var App = React.createClass({
       }
       return player;
     });
+
     this.setState(newPlayers);
-    console.log(this.state.players);
+    //console.log(this.state.players);
   },
 
   handleBuyerDetails: function(no,name,address,city,
@@ -619,10 +653,18 @@ export var App = React.createClass({
   },
 
   render: function(){
+    
     var {images, activeImageIndex, scale} = this.state
     var ready = images[0].shadow && images[1].shadow
 
     var activeImage = images[activeImageIndex]
+
+    var fmt = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'MYR',
+  currencyDisplay:'symbol',
+  minimumFractionDigits: 2,
+});
 
     return (
       <div className='padding-horizontal-2x'>
@@ -633,7 +675,8 @@ export var App = React.createClass({
             return (
               <a className='button' onClick={this.readDefaultSprite.bind(null, spriteIndex)} key={spriteIndex}>
                 <img src={path} alt={sprite.name} height="64" width="64" />
-                {}
+                <br/>
+                {fmt.format(sprite.price)}
               </a>
             )
           })
@@ -660,7 +703,7 @@ export var App = React.createClass({
         </div>
 
         <div>
-          {ready ? 'Preview:' : 'Select a design first to preview'}
+          {ready ? '' : 'Select a design first to preview'}
         </div>
         <br />
 
@@ -700,6 +743,15 @@ export var App = React.createClass({
           onUserInput={this.handleBuyerDetails}
         />
         <br/>
+        
+        <h2>Total Price:</h2>
+         {fmt.format(this.state.jerseyChosen.price)} x {this.state.players.length} unit{this.state.players.length>1? 's':''}
+        <br/>
+        <h3>
+        = {fmt.format(this.state.totalPrice)} 
+        </h3>       
+        <br/>
+
         <p>
           <input 
             type="button" 
@@ -756,7 +808,6 @@ getInitialState () {
 
 
   handleUserInput: function(number, name) {
-    console.log("at handle");
     this.setState({
       numberPreview: number,
       namePreview: name,

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "70f6df2217904d364e32"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3940bab59a205fca21ed"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -23785,6 +23785,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
+	//import './email.min.js';
 	//import ReactDataGrid from 'react-data-grid';
 	
 	//var React = require('react')
@@ -23807,14 +23808,17 @@
 	var defaultSprites = {
 	  white: {
 	    name: 'White',
+	    price: 30,
 	    sprites: ['white_front.png', 'white_back.png']
 	  },
 	  blue: {
 	    name: 'Blue',
+	    price: 40,
 	    sprites: ['blue_front.png', 'blue_back.png']
 	  },
 	  green: {
 	    name: 'Green',
+	    price: 37,
 	    sprites: ['green_front.png', 'green_back.png']
 	  }
 	};
@@ -23915,7 +23919,10 @@
 	  },
 	
 	  render: function render() {
-	    return _react2.default.createElement('canvas', { width: this.state.width, height: this.state.height });
+	    return _react2.default.createElement('canvas', {
+	      id: 'mycanvas',
+	      width: this.state.width,
+	      height: this.state.height });
 	  }
 	
 	});
@@ -24317,7 +24324,7 @@
 	    timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
 	    timestamp += (now.getSeconds() < 10 ? '0' : '') + now.getSeconds().toString();
 	    return {
-	      shirt: null,
+	      jerseyChosen: {},
 	      images: [{ loadingImage: false }, { loadingImage: false }, { loadingImage: false }],
 	
 	      activeImageIndex: 0,
@@ -24326,7 +24333,7 @@
 	      namePreview: "Ahmad",
 	      players: [{
 	        id: 1,
-	        name: 'Fulan',
+	        name: 'Ahmad',
 	        number: '1',
 	        size: 'L'
 	      }],
@@ -24339,17 +24346,28 @@
 	        zipcode: '',
 	        phoneNumber: '',
 	        email: ''
-	      }
+	      },
+	      totalPrice: 0,
+	      designCanvas: null
 	
 	    };
 	  },
+	  saveCanvas: function saveCanvas() {
+	    var canvas = document.getElementById("mycanvas");
+	    var img = canvas.toDataURL("image/png");
+	    this.setState({ designCanvas: img });
+	    //document.write('<img src="'+img+'"/>');
+	  },
 	  componentDidMount: function componentDidMount() {
 	    this.readDefaultSprite('white');
+	    this.updatePrice();
 	    //console.log(this.state.buyerDetails.orderNo)
 	  },
 	  readDefaultSprite: function readDefaultSprite(name) {
 	    var _this4 = this;
 	
+	    var j = { jerseyChosen: defaultSprites[name] };
+	    this.setState(j);
 	    _.forEach(defaultSprites[name].sprites, function (sprite, spriteIndex) {
 	      readImageAsBase64('sprites/' + sprite, function (base64) {
 	        _this4.loadBase64Sprite(spriteIndex, base64);
@@ -24357,7 +24375,6 @@
 	    });
 	  },
 	  onDrop: function onDrop(imageIndex, files) {
-	
 	    this.readFile(imageIndex, files[0]);
 	  },
 	  onDelLogo: function onDelLogo(imageIndex, files) {
@@ -24367,6 +24384,7 @@
 	    this.forceUpdate();
 	  },
 	  onSubmitOrder: function onSubmitOrder() {
+	    //TODO
 	    console.log(this.state.buyerDetails);
 	  },
 	  readFile: function readFile(imageIndex, file) {
@@ -24381,7 +24399,7 @@
 	      var base64 = data.currentTarget.result;
 	
 	      if (base64.length > 10000) {
-	        var confirmation = confirm('Your image is really big! Do you really want to TRY to animate it?');
+	        var confirmation = confirm('Logo is very large. Confirm?');
 	
 	        if (!confirmation) {
 	          _this5.state.images[imageIndex].loadingImage = false;
@@ -24420,10 +24438,18 @@
 	        width: imageWidth,
 	        loadingImage: false
 	      };
+	      _this6.updatePrice();
 	      _this6.forceUpdate();
 	    });
 	  },
 	
+	
+	  updatePrice: function updatePrice() {
+	    //console.log(this.state.jerseyChosen.price);
+	    var newPrice = this.state.players.length * this.state.jerseyChosen.price;
+	    this.setState({ totalPrice: newPrice });
+	    this.forceUpdate();
+	  },
 	
 	  handleUserInput: function handleUserInput(number, name) {
 	    this.setState({
@@ -24435,6 +24461,7 @@
 	  handleRowDel: function handleRowDel(player) {
 	    var index = this.state.players.indexOf(player);
 	    this.state.players.splice(index, 1);
+	    this.updatePrice();
 	    this.setState(this.state.players);
 	  },
 	  handleAddEvent: function handleAddEvent(evt) {
@@ -24448,6 +24475,7 @@
 	
 	    console.log("Player added");
 	    this.state.players.push(player);
+	    this.updatePrice();
 	    this.setState(this.state.players);
 	  },
 	  handlePlayerTable: function handlePlayerTable(evt) {
@@ -24469,8 +24497,9 @@
 	      }
 	      return player;
 	    });
+	
 	    this.setState(newPlayers);
-	    console.log(this.state.players);
+	    //console.log(this.state.players);
 	  },
 	
 	
@@ -24500,6 +24529,13 @@
 	
 	    var activeImage = images[activeImageIndex];
 	
+	    var fmt = new Intl.NumberFormat('en-US', {
+	      style: 'currency',
+	      currency: 'MYR',
+	      currencyDisplay: 'symbol',
+	      minimumFractionDigits: 2
+	    });
+	
 	    return _react2.default.createElement(
 	      'div',
 	      { className: 'padding-horizontal-2x' },
@@ -24513,7 +24549,9 @@
 	        return _react2.default.createElement(
 	          'a',
 	          { className: 'button', onClick: _this7.readDefaultSprite.bind(null, spriteIndex), key: spriteIndex },
-	          _react2.default.createElement('img', { src: path, alt: sprite.name, height: '64', width: '64' })
+	          _react2.default.createElement('img', { src: path, alt: sprite.name, height: '64', width: '64' }),
+	          _react2.default.createElement('br', null),
+	          fmt.format(sprite.price)
 	        );
 	      }),
 	      _react2.default.createElement(
@@ -24546,7 +24584,7 @@
 	      _react2.default.createElement(
 	        'div',
 	        null,
-	        ready ? 'Preview:' : 'Select a design first to preview'
+	        ready ? '' : 'Select a design first to preview'
 	      ),
 	      _react2.default.createElement('br', null),
 	      _react2.default.createElement(
@@ -24586,6 +24624,24 @@
 	        }),
 	        _react2.default.createElement('br', null),
 	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Total Price:'
+	        ),
+	        fmt.format(this.state.jerseyChosen.price),
+	        ' x ',
+	        this.state.players.length,
+	        ' unit',
+	        this.state.players.length > 1 ? 's' : '',
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'h3',
+	          null,
+	          '= ',
+	          fmt.format(this.state.totalPrice)
+	        ),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
 	          'p',
 	          null,
 	          _react2.default.createElement('input', {
@@ -24611,7 +24667,6 @@
 	
 	
 	  handleUserInput: function handleUserInput(number, name) {
-	    console.log("at handle");
 	    this.setState({
 	      numberPreview: number,
 	      namePreview: name
