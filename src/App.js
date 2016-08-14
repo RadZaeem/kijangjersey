@@ -97,7 +97,8 @@ var Graphic = React.createClass({
     var shirtBack=  new Image();
     shirtBack.src = this.props.shirtBackSrc;
     var logo=  new Image();
-    logo.src = this.props.logoSrc;
+    //console.log(logo.src);
+    if (this.props.logoSrc != undefined) logo.src = this.props.logoSrc;
 
     
     var shirtFrontPos=[((1/20)*this.state.width),((1/10)*this.state.height)];
@@ -111,7 +112,7 @@ var Graphic = React.createClass({
     var logoScale=[(0.1)*shirtBack.width, (0.1)*shirtBack.width];
     var logoPos=[shirtFrontPos[0]+logoOffset[0],shirtFrontPos[1]+logoOffset[1]];
     context.drawImage(logo, logoPos[0], logoPos[1], logoScale[0],logoScale[1]);
-    
+    //}
     context.textAlign="center";
 
     var numberOffset=[shirtBack.width/2, shirtBack.height/2];
@@ -290,6 +291,7 @@ class EditableCell extends React.Component {
 }
 
 
+
 /*------------------------------------------------------
 
 BuyerDetails
@@ -299,10 +301,16 @@ For buyer to fill up his/her details
 
 var BuyerDetails= React.createClass({ 
   handleChange: function() {
-    //this.props.onUserInput(
-    //  this.refs.num.value,
-    //  this.refs.name.value
-    //);
+    this.props.onUserInput(
+      this.props.orderNo,
+      this.refs.nameInput.value,
+      this.refs.addressInput.value,
+      this.refs.cityInput.value,
+      this.refs.stateInput.value,
+      this.refs.zipCodeInput.value,
+      this.refs.phoneInput.value,
+      this.refs.emailInput.value
+    );
   },
   
   render: function() {
@@ -320,6 +328,7 @@ var BuyerDetails= React.createClass({
           type="text"
           ref="nameInput"
           size="50"
+          onChange={this.handleChange}  
         />
         </p>
 
@@ -329,6 +338,7 @@ var BuyerDetails= React.createClass({
           ref="addressInput"
           cols="40"
           rows="5"
+          onChange={this.handleChange}  
         />
         </p>
 
@@ -337,6 +347,7 @@ var BuyerDetails= React.createClass({
         <input
           type="text"
           ref="cityInput"
+          onChange={this.handleChange}  
           />
         </p>
         <p>
@@ -344,6 +355,7 @@ var BuyerDetails= React.createClass({
         <input
           type="text"
           ref="stateInput"
+          onChange={this.handleChange}  
           />
         </p>
 
@@ -353,6 +365,7 @@ var BuyerDetails= React.createClass({
           type="text"
           ref="zipCodeInput"
           size='8'
+          onChange={this.handleChange}  
         />
         </p>
 
@@ -362,6 +375,7 @@ var BuyerDetails= React.createClass({
           type="text"
           ref="phoneInput"
           size='12'
+          onChange={this.handleChange}  
         />
         </p>
 
@@ -370,15 +384,38 @@ var BuyerDetails= React.createClass({
         <input
           type="text"
           ref="emailInput"  
+          onChange={this.handleChange}  
         />
         </p>
-
-        <br/>
-
-        <p><input type="button" value="Submit Order"/></p>
-
         </form>
         </div>
+    );
+  }
+});
+
+
+/*------------------------------------------------------
+
+Submit Button
+send email to kijangjerseymaker@gmail.com
+pwd:syukriah
+------------------------------------------------------*/
+
+var SubmitButton= React.createClass({   
+  render: function() {
+    return (
+      <div>
+        <form>
+          <p>
+            <input 
+              type="button" 
+              value="Submit Order"
+              ref="submitButton"
+              onClick={this.props.onClick}
+              />
+          </p>
+        </form>
+      </div>
     );
   }
 });
@@ -450,6 +487,7 @@ export var App = React.createClass({
   },
 
   onDrop (imageIndex, files) {
+
     this.readFile(imageIndex, files[0])
   },
 
@@ -458,6 +496,10 @@ export var App = React.createClass({
         loadingImage: false
       }
       this.forceUpdate()
+  },
+
+  onSubmitOrder() {
+    console.log(this.state.buyerDetails);
   },
 
 
@@ -510,7 +552,6 @@ export var App = React.createClass({
   },
 
   handleUserInput: function(number, name) {
-    console.log("at handle");
     this.setState({
       numberPreview: number,
       namePreview: name,
@@ -560,6 +601,21 @@ export var App = React.createClass({
     });
     this.setState(newPlayers);
     console.log(this.state.players);
+  },
+
+  handleBuyerDetails: function(no,name,address,city,
+    stateProvince,zipCode,phoneNumber,email) {
+    var details = {buyerDetails: {
+        orderNo: no,
+        name:name,
+        address:address,
+        city:city,
+        stateProvince:stateProvince,
+        zipcode:zipCode,
+        phoneNumber:phoneNumber,
+        email:email
+      }};
+    this.setState(details);
   },
 
   render: function(){
@@ -641,7 +697,22 @@ export var App = React.createClass({
           zipcode={this.state.buyerDetails.zipCode}
           phoneNumber={this.state.buyerDetails.phoneNumber}
           email={this.state.buyerDetails.email}
+          onUserInput={this.handleBuyerDetails}
         />
+        <br/>
+        <p>
+          <input 
+            type="button" 
+            value="Submit Order"
+            ref="submitButton"
+            onClick={this.onSubmitOrder}
+          />
+        </p>
+        {/*}
+        <SubmitButton
+          buyerDetails={this.state.buyerDetails}
+          onClick={this.onSubmitOrder}
+        />*/}
         </div>
         
 {/*
