@@ -31,7 +31,14 @@
     "babel-preset-es2015": "latest",
     "babel-preset-react": "latest",
     "base64-image-utils": "latest",
+    "chai": "^3.5.0",
     "express": "latest",
+    "file": "^0.2.2",
+    "fs": "0.0.2",
+    "iconv": "^2.2.1",
+    "json-loader": "^0.5.4",
+    "mailparser": "^0.6.1",
+    "mocha": "^3.0.2",
     "react": "latest",
     "react-data-grid": "^1.0.36",
     "react-dom": "latest",
@@ -41,14 +48,20 @@
     "react-transform-hmr": "latest",
     "redbox-react": "latest",
     "rimraf": "latest",
+    "simplesmtp": "^0.3.35",
     "tinycolor2": "latest",
+    "tls": "0.0.1",
     "webpack": "latest",
     "webpack-dev-middleware": "latest",
     "webpack-hot-middleware": "latest"
   },
   "dependencies": {
+    "addressparser": "^1.0.1",
     "base64-image-utils": "latest",
+    "emailjs": "^1.0.5",
     "lodash": "latest",
+    "mimelib": "^0.2.19",
+    "moment": "^2.14.1",
     "react": "latest",
     "react-bootstrap-table": "^2.4.1",
     "react-data-grid": "^1.0.36",
@@ -58,6 +71,7 @@
     "react-rating": "^0.4.0",
     "react-redux": "^4.4.5",
     "redux-saga": "^0.11.0",
+    "starttls": "^1.0.1",
     "tinycolor2": "latest"
   }
 }

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3940bab59a205fca21ed"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e0f295e59f29d60e7f4a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -1773,6 +1773,17 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	//import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+	
+	var service_id = ' gmail';
+	var template_id = 'test_billing';
+	var template_params = {
+	  name: 'John',
+	  reply_email: 'raden.m.muaz@gmail.com',
+	  message: 'This is awesome!'
+	};
+	
+	emailjs.send(service_id, template_id, template_params);
+	
 	_reactDom2.default.render(_react2.default.createElement(_App.App, null), document.getElementById('root'));
 	
 	//import Products from './Products';

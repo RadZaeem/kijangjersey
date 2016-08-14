@@ -2,6 +2,23 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import { App } from './App'
 //import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+
+var service_id = ' gmail';
+var template_id = 'test_billing';
+var template_params = {
+name: 'John',
+reply_email: 'raden.m.muaz@gmail.com',
+message: 'This is awesome!'
+};
+
+//emailjs.send(service_id,template_id,template_params);
+emailjs.send("gmail","test_billing",{name: "James", notes: "Check this out!"})
+.then(function(response) {
+   console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+}, function(err) {
+   console.log("FAILED. error=", err);
+});
+
 ReactDOM.render(<App />, document.getElementById('root'))
 
 //import Products from './Products';
