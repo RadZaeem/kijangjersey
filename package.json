@@ -1,0 +1,82 @@
+{
+  "name": "kijangjersey",
+  "version": "0.0.1",
+  "description": "Create animated sprites with pure css!",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
+    "build": "npm run clean && npm run build:webpack",
+    "start": "node devServer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javierbyte/morphin.git"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "css",
+    "picture"
+  ],
+  "author": "Javier Bórquez <hi@javier.xyz> (http://github.com/javierbyte)",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/javierbyte/morphin/issues"
+  },
+  "homepage": "https://github.com/javierbyte/morphin",
+  "devDependencies": {
+    "babel-core": "latest",
+    "babel-loader": "latest",
+    "babel-plugin-react-transform": "latest",
+    "babel-preset-es2015": "latest",
+    "babel-preset-react": "latest",
+    "base64-image-utils": "latest",
+    "chai": "^3.5.0",
+    "express": "latest",
+    "file": "^0.2.2",
+    "fs": "0.0.2",
+    "iconv": "^2.2.1",
+    "json-loader": "^0.5.4",
+    "mailparser": "^0.6.1",
+    "mocha": "^3.0.2",
+    "react": "latest",
+    "react-data-grid": "^1.0.36",
+    "react-dom": "latest",
+    "react-dropzone": "latest",
+    "react-hot-loader": "latest",
+    "react-transform-catch-errors": "latest",
+    "react-transform-hmr": "latest",
+    "redbox-react": "latest",
+    "rimraf": "latest",
+    "simplesmtp": "^0.3.35",
+    "tinycolor2": "latest",
+    "tls": "0.0.1",
+    "webpack": "latest",
+    "webpack-dev-middleware": "latest",
+    "webpack-hot-middleware": "latest"
+  },
+  "dependencies": {
+    "addressparser": "^1.0.1",
+    "base64-image-utils": "latest",
+    "emailjs": "^1.0.5",
+    "express": "^4.14.0",
+    "lodash": "latest",
+    "mimelib": "^0.2.19",
+    "moment": "^2.14.1",
+    "nodemailer": "^2.5.0",
+    "react": "latest",
+    "react-bootstrap-table": "^2.4.1",
+    "react-data-grid": "^1.0.36",
+    "react-dom": "latest",
+    "react-dropzone": "latest",
+    "react-editable-table": "^0.3.7",
+    "react-icon-rating": "^0.2.0",
+    "react-rating": "^0.4.0",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "redux-saga": "^0.11.0",
+    "redux-thunk": "^2.1.0",
+    "starttls": "^1.0.1",
+    "tinycolor2": "latest"
+  }
+}
