@@ -2,8 +2,7 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  //devtool: 'eval',
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval',
   entry: [
     'webpack-hot-middleware/client',
     './src/index'
@@ -14,7 +13,6 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
   ],
@@ -22,15 +20,7 @@ module.exports = {
     loaders: [{
       test: /\.js$/,
       loaders: ['babel'],
-      exclude: /node_modules/,
       include: path.join(__dirname, 'src')
-    }, { 
-      test: /\.json$/, 
-      loader: 'json' 
-    }, {
-      test: /\.css?$/,
-      loaders: [ 'style', 'raw' ],
-      include: __dirname
     }]
   }
 }

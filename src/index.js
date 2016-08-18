@@ -2,11 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom';
 import { App } from './App'
 
-//ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'))
 
 //import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-const express = require('express')  
+/*const express = require('express')  
 const app = express()  
 const port = 3001
 
@@ -60,7 +60,7 @@ function handleSayHello(req, res) {
 }
 
 
-
+*/
 /*
 import { render } from 'react-dom'
 import { createStore, applyMiddleware } from 'redux'
@@ -99,6 +99,10 @@ Email.send("kijangjerseymaker@gmail.com",
 
 
 /*
+=======
+//import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+
+>>>>>>> 508921a74f3ca93fe803cb91c7fecfdd8ba8fc83
 var service_id = ' gmail';
 var template_id = 'test_billing';
 var template_params = {
@@ -108,13 +112,17 @@ message: 'This is awesome!'
 };
 
 //emailjs.send(service_id,template_id,template_params);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 508921a74f3ca93fe803cb91c7fecfdd8ba8fc83
 emailjs.send("gmail","test_billing",{name: "James", notes: "Check this out!"})
 .then(function(response) {
    console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
 }, function(err) {
    console.log("FAILED. error=", err);
 });
+<<<<<<< HEAD
 */
 
 //import Products from './Products';

@@ -1,5 +1,7 @@
-import React from 'react'; 
+import React from "react"; 
 import ReactDOM from 'react-dom'; 
+
+
 //import './email.min.js';
 //import ReactDataGrid from 'react-data-grid';
 
@@ -13,7 +15,9 @@ var Dropzone = require('react-dropzone')
 var download = require('./lib/download.js')
 var compressColor = require('./lib/compress-color.js')
 var readImageAsBase64 = require('./lib/read-image-as-base64.js');
+var Rating = require('react-rating');
 
+//var IconRating = require('react-icon-rating')
 
 /*------------------------------------------------------
 
@@ -22,21 +26,21 @@ Sprites related variables and functions
 ------------------------------------------------------*/
 
 var defaultSprites = {
-  white: {
-    name: 'White',
+  orange: {
+    name: 'Orange',
     price:30,
-    sprites: ['white_front.png', 'white_back.png']
+    sprites: ['orange_front.png', 'orange_back.png']
   },
-  blue: {
-    name: 'Blue',
+  green: {
+    name: 'Green',
     price:40,
-    sprites: ['blue_front.png', 'blue_back.png']
-  },
+    sprites: ['green_front.png', 'green_back.png']
+  }/*
   green: {
     name: 'Green',
     price:37,
     sprites: ['green_front.png', 'green_back.png']
-  },
+  },*/
   /*
   mario: {
     name: 'Mario',
@@ -78,8 +82,8 @@ var Graphic = React.createClass({
     
     return {
       text: "",
-      width:768,
-      height:300,
+      width:900,
+      height:520
     };
   },
   componentDidMount: function() {
@@ -123,12 +127,13 @@ var Graphic = React.createClass({
 
     var numberOffset=[shirtBack.width/2, shirtBack.height/2];
     var numberPos=[shirtBackPos[0]+numberOffset[0],shirtBackPos[1]+numberOffset[1]];
-    context.font = "90px sans";
+    context.font = "160px sans";
+    context.fillStyle= "white"
     context.fillText(this.props.numberPreview, numberPos[0], numberPos[1]);
     
-    var nameOffset=[shirtBack.width/2, (3/4)*shirtBack.height];
+    var nameOffset=[shirtBack.width/2, (0.7)*shirtBack.height];
     var namePos=[shirtBackPos[0]+nameOffset[0],shirtBackPos[1]+nameOffset[1]];
-    context.font = "32px sans";
+    context.font = "30px sans";
     context.fillText(this.props.namePreview, namePos[0], namePos[1]);
 
 
@@ -446,7 +451,16 @@ export var App = React.createClass({
     timestamp += (now.getHours() < 10 ? '0' : '') + now.getHours().toString();
     timestamp += (now.getMinutes() < 10 ? '0' : '') + now.getMinutes().toString();
     timestamp += (now.getSeconds() < 10 ? '0' : '') + now.getSeconds().toString();
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) dd='0'+dd
+    if(mm<10) mm='0'+mm
+    today = mm+'/'+dd+'/'+yyyy;
     return {
+      finishOrder:false,
       jerseyChosen:{},
       images: 
       [ 
@@ -471,6 +485,7 @@ export var App = React.createClass({
       buyerDetails:
       {
         orderNo: timestamp,
+        orderDate: today,
         name:'',
         address:'',
         city:'',
@@ -480,7 +495,8 @@ export var App = React.createClass({
         email:''
       },
       totalPrice:0,
-      designCanvas:null
+      designCanvas:null,
+      userRate:null
 
     }
   },
@@ -492,7 +508,7 @@ export var App = React.createClass({
     //document.write('<img src="'+img+'"/>');
   },
   componentDidMount() {
-    this.readDefaultSprite('white')
+    this.readDefaultSprite('orange')
 this.updatePrice();
     //console.log(this.state.buyerDetails.orderNo)
   },
@@ -522,8 +538,67 @@ this.updatePrice();
 
   onSubmitOrder() {
     //TODO
-    console.log(this.state.buyerDetails);
+    // SEND EMAIL
+    /*console.log(this.state.buyerDetails);
+    console.log(this.state.totalPrice);
+    console.log(this.state.jerseyChosen);
+    console.log(this.state.players);*/
+
+    let confirmation = confirm('Confirm Submit Order?')
+    if (!confirmation) return;
+
+
+    var players = this.state.players
+    var ps= ""
+    for (var i=0;i<this.state.players.length;i++) {
+      ps += "("+ (i+1).toString() + ") "
+      ps += players[i].name + ", "
+      ps += players[i].number + ","
+      ps += players[i].size + ";\t"
+    }
+
+    console.log(ps);
+
+    var d = {
+      "buyerDetails":{
+        "address": this.state.buyerDetails.address,
+        "city": this.state.buyerDetails.city,
+        "email": this.state.buyerDetails.email,
+        "name": this.state.buyerDetails.name,
+        "orderNo": this.state.buyerDetails.orderNo,
+        "orderDate": this.state.buyerDetails.orderDate,
+        "phoneNumber": this.state.buyerDetails.phoneNumber,
+        "stateProvince": this.state.buyerDetails.stateProvince,
+        "zipcode": this.state.buyerDetails.zipCode
+      },
+      "jerseyChosen":{
+        "name":this.state.jerseyChosen.name,
+        "price": this.priceToString(this.state.jerseyChosen.price)
+      },
+      "players": ps,
+      "noOfPlayers":this.state.players.length,
+      "totalPrice":this.priceToString(this.state.totalPrice),
+      "userRate":this.state.userRate
+
+    };
+
+    emailjs.send("gmail","kijang_billing", d)
+.then(function(response) {
+   console.log("emailjs sending SUCCESS. status=%d, text=%s", response.status, response.text);
+   //window.alert('Order Submission Succeeded! Please check your email '+ this.state.buyerDetails.email)
+   //this.setState({finishOrder:true});
+   //this.forceUpdate()
+
+}, function(err) {
+   console.log("FAILED. error=", err);
+   //window.alert("Submission FAILED. Please check your email address (is it correct?) \n Error details:"+ err)
+});
+
+    this.setState({finishOrder:true});
+   this.forceUpdate()
   },
+
+
 
 
   readFile(imageIndex, file) {
@@ -652,6 +727,22 @@ this.updatePrice();
     this.setState(details);
   },
 
+  handleRate: function (rate){
+    if (rate!=undefined) this.setState({userRate:rate})
+    console.log (this.state.userRate)
+  },
+
+  priceToString: function(p) {
+    var fmt = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'MYR',
+  currencyDisplay:'symbol',
+  minimumFractionDigits: 2,
+});
+    return fmt.format(p)
+
+  },
+
   render: function(){
     
     var {images, activeImageIndex, scale} = this.state
@@ -665,6 +756,15 @@ this.updatePrice();
   currencyDisplay:'symbol',
   minimumFractionDigits: 2,
 });
+
+    if (this.state.finishOrder == true)
+      return (
+        <h2>
+        Order Submission Succeeded! Please check your email {this.state.buyerDetails.email}
+        </h2>
+      )
+
+
 
     return (
       <div className='padding-horizontal-2x'>
@@ -752,6 +852,14 @@ this.updatePrice();
         </h3>       
         <br/>
 
+        <h3>Rate this web app, thanks!</h3>
+        <Rating
+           onRate={this.handleRate}
+        />
+
+
+        <br/>
+
         <p>
           <input 
             type="button" 
@@ -826,3 +934,92 @@ getInitialState () {
     );
   }
 });
+
+
+
+/*
+var testData = {
+
+buyerDetails:{
+address: "UTM Skudai",
+city: "Skudai",
+email: "raden.m.muaz@gmail.com",
+name: "Raden Muaz",
+orderNo: "20160718084915",
+phoneNumber: "0197123456",
+stateProvince: "Johor",
+zipcode: "81310"
+},
+
+jerseyChosen:{name: "White", price: 30, sprites: Array[2]},
+
+players:{
+  
+  0:{id: 1,
+name: "Ahmad",
+number: "1",
+size: "L"},
+
+  1:{id: "2",
+name: "Ali",
+number: "2",
+size: "M"}
+}
+
+};
+
+console.log(testData)*/
+
+
+/*var testData = {
+
+"buyerDetails":{
+"address": "UTM Skudai",
+"city": "Skudai",
+"email": "raden.m.muaz@gmail.com",
+"name": "Raden Muaz",
+"orderNo": "20160718084915",
+"phoneNumber": "0197123456",
+"stateProvince": "Johor",
+"zipcode": "81310"
+},
+
+"jerseyChosen":{"name": "White", "price": 30},
+
+"players":{
+  
+  "0":{"id": 1,
+"name": "Ahmad",
+"number": "1",
+"size": "L"},
+
+  "1":{"id": "2",
+"name": "Ali",
+"number": "2",
+"size": "M"}
+},
+
+totalPrice:'60.00'
+};*/
+
+/*Order Details:  (Order No {{buyerDetails.orderNo}})
+
+Buyer's Particular
+
+Name: {{buyerDetails.name}}
+
+Address: {{buyerDetails.address}}
+
+City :{{buyerDetails.city}}
+
+State/Province: {{buyerDetails.stateProvince}}
+
+Zip Code: {{buyerDetails.zipCode}}
+
+Phone Number: {{buyerDetails.phoneNumber}}
+
+Jersey Design {{jerseyChosen.name}}
+
+List of Players Name Number and Sizes:
+
+{{players}}*/
